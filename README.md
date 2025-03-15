@@ -89,6 +89,11 @@
 - `Environment`: абстракция среды окружения, хранящей маппинги ключ-значние.
 - `ReturnCode`: enum-класс, означающий коды возврата комманд.
 
+<p align="center">
+    <img src="assets/readme/meta.png" width="300" alt="meta">
+</p>
+
+
 
 ## Ссылки:
 - Исходники UML диграмм: [ссылка](https://drive.google.com/file/d/1RxAk_gkMuU3yro490gdI4PoGJ4LMWQYF/view?usp=sharing).
