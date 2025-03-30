@@ -1,16 +1,20 @@
 package org.hse
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import org.hse.cli.CLIInterpreter
+import org.hse.org.hse.cli.Environment
+import org.hse.org.hse.cli.utils.StreamConfig
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
+fun main() {
+    // Create environment from system environment
+    val env = Environment()
+    System.getenv().forEach { (key, value) ->
+        env.set(key, value)
     }
+
+    // Create stream config with standard streams
+    val streamConfig = StreamConfig(System.`in`, System.out, System.out)
+
+    // Create and run interpreter
+    val interpreter = CLIInterpreter(streamConfig, env)
+    interpreter.run()
 }

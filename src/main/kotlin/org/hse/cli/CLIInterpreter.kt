@@ -1,0 +1,61 @@
+package org.hse.cli
+
+import org.hse.org.hse.cli.Environment
+import org.hse.org.hse.cli.ProgramState
+import org.hse.org.hse.cli.meta.ReturnCode
+import org.hse.org.hse.cli.utils.StreamConfig
+import org.hse.org.hse.cli.utils.newLine
+import java.io.*
+
+/**
+ * Class for interpreting CLI input.
+ */
+class CLIInterpreter(
+    private val streamConfig: StreamConfig,
+    environment: Environment
+) {
+    private val parser = CLIParser()
+    private val state = ProgramState(
+        environment,
+        File(System.getProperty("user.dir")),
+        true
+    )
+
+    /**
+     * Run the interpreter.
+     */
+    fun run() {
+        val reader = BufferedReader(InputStreamReader(streamConfig.stdin))
+        val writer = OutputStreamWriter(streamConfig.stdout)
+        val errorWriter = OutputStreamWriter(streamConfig.stderr)
+
+        while (state.isRunning) {
+            try {
+                // Print prompt
+                writer.write("> ")
+                writer.flush()
+
+                // Read input
+                val input = reader.readLine() ?: break
+
+                // Parse input
+                val task = parser.parse(input)
+
+                // Execute task
+                val result = task.execute(streamConfig, state)
+                if (result != ReturnCode.SUCCESS) {
+                    writer.write("Command failed: exit code ${result.exitCode}$newLine")
+                }
+                writer.flush()
+            }
+            catch (e: Exception) {
+                e.message?.let {
+                    errorWriter.write(it)
+                    errorWriter.flush()
+                }
+                e.printStackTrace(System.err)
+                System.err.flush()
+            }
+        }
+    }
+}
