@@ -1,8 +1,4 @@
-package org.hse.org.hse.cli.errors
-
-import org.hse.cli.Value
-import org.hse.org.hse.cli.utils.newLine
-
+package org.hse.cli
 
 internal class ParsingError(msg: String) : Exception(msg)
 internal class IllegalCommandArgumentsCount(commandName: String, args: List<Value>, expectedCount: Int) :

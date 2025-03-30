@@ -1,7 +1,5 @@
 package org.hse.cli
 
-import org.hse.org.hse.cli.Environment
-import kotlin.text.Regex.Companion.escape
 
 // TODO: in fabric add proper errors handling
 

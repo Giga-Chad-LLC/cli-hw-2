@@ -1,4 +1,4 @@
-package org.hse.org.hse.cli.meta
+package org.hse.cli
 
 /**
  * Sealed class representing return codes for commands.

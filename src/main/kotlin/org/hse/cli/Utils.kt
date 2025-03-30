@@ -1,4 +1,4 @@
-package org.hse.org.hse.cli.utils
+package org.hse.cli
 
 import java.io.OutputStream
 
@@ -11,4 +11,4 @@ internal const val WC_COMMAND = "wc"
 internal val newLine = System.lineSeparator()
 
 internal fun OutputStream.write(str: String) = write(str.toByteArray())
-internal fun OutputStream.writeln(str: String) = write("$str$newLine".toByteArray())
+internal fun OutputStream.writeln(str: String) = write("$str${newLine}".toByteArray())

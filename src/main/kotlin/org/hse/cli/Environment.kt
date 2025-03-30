@@ -1,4 +1,4 @@
-package org.hse.org.hse.cli
+package org.hse.cli
 
 import java.io.File
 

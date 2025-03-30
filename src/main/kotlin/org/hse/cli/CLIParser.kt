@@ -1,12 +1,5 @@
 package org.hse.cli
 
-import org.hse.org.hse.cli.errors.ParsingError
-import org.hse.org.hse.cli.utils.*
-import org.hse.org.hse.cli.utils.CAT_COMMAND
-import org.hse.org.hse.cli.utils.ECHO_COMMAND
-import org.hse.org.hse.cli.utils.EXIT_COMMAND
-import org.hse.org.hse.cli.utils.PWD_COMMAND
-import org.hse.org.hse.cli.utils.WC_COMMAND
 
 /**
  * Class for parsing CLI input into tasks.

@@ -1,8 +1,8 @@
 package org.hse
 
 import org.hse.cli.CLIInterpreter
-import org.hse.org.hse.cli.Environment
-import org.hse.org.hse.cli.utils.StreamConfig
+import org.hse.cli.Environment
+import org.hse.cli.StreamConfig
 
 fun main() {
     // Create environment from system environment

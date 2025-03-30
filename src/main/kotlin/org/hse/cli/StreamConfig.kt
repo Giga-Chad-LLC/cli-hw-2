@@ -1,4 +1,4 @@
-package org.hse.org.hse.cli.utils
+package org.hse.cli
 
 import java.io.InputStream
 import java.io.OutputStream
