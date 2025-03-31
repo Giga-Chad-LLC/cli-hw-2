@@ -1,6 +1,7 @@
 package org.hse.cli
 
 import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 /**
@@ -91,7 +92,7 @@ class CatCommand(args: List<Value>) : BuiltInCommand(args) {
         val filename = args[0].evaluateToString(state.environment)
 
         try {
-            val file = File(filename)
+            val file = Paths.get(state.currentDir.absolutePath, filename).toFile()
             if (!file.exists()) {
                 streamConfig.stderr.writeln("$name: $filename: No such file or directory")
                 return ReturnCode.FAILURE
@@ -137,7 +138,7 @@ class WcCommand(args: List<Value>) : BuiltInCommand(args) {
         return ReturnCode.SUCCESS
     }
 
-    private fun countLinesWordsChars(text: String): Triple<Int, Int, Int> {
+    internal fun countLinesWordsChars(text: String): Triple<Int, Int, Int> {
         val lines = text.lines().size
         val words = text.split(Regex("\\s+")).filter { it.isNotEmpty() }.size
         val chars = text.length

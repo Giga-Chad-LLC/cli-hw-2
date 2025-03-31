@@ -18,7 +18,7 @@ interface Task {
 /**
  * Task for modifying the environment.
  */
-class ModifyEnvironmentTask(private val key: String, private val value: Value) : Task {
+class ModifyEnvironmentTask(val key: String, val value: Value) : Task {
 
     override fun execute(streamConfig: StreamConfig, state: ProgramState): ReturnCode {
         state.environment.set(key, value.evaluateToString(state.environment))
@@ -29,7 +29,7 @@ class ModifyEnvironmentTask(private val key: String, private val value: Value) :
 /**
  * Task for executing a pipeline of commands.
  */
-class PipelineTask(private val commands: List<Command>) : Task {
+class PipelineTask(val commands: List<Command>) : Task {
 
     override fun execute(streamConfig: StreamConfig, state: ProgramState): ReturnCode {
         if (commands.isEmpty()) {

@@ -7,14 +7,19 @@ import java.io.*
  */
 class CLIInterpreter(
     private val streamConfig: StreamConfig,
-    environment: Environment
+    environment: Environment,
+    currentDirPath: String = System.getProperty("user.dir")
 ) {
     private val parser = CLIParser()
     private val state = ProgramState(
         environment,
-        File(System.getProperty("user.dir")),
+        File(currentDirPath),
         true
     )
+
+    init {
+        println("Current directory: ${state.currentDir}")
+    }
 
     /**
      * Run the interpreter.

@@ -13,13 +13,19 @@ abstract class Value {
      * @return The evaluated string.
      */
     abstract fun evaluateToString(environment: Environment): String
+
+    /**
+     * Value as a pure string, represents a parsed result.
+     */
+    abstract val str: String
 }
 
 /**
  * Value with double quotes.
  * Double quotes preserve the literal value of all characters except for backslash and dollar sign.
  */
-class DoubleQuotesValue(str: String) : Value() {
+class DoubleQuotesValue(override val str: String) : Value() {
+
     private val processedStr: String = str
         .replace("\\", "\\\\")   // Escape backslashes
         .replace("\n", "\\n")    // Escape newline
@@ -32,7 +38,7 @@ class DoubleQuotesValue(str: String) : Value() {
 /**
  * Abstract class for values that need evaluation.
  */
-abstract class EvalValue(private val str: String) : Value() {
+abstract class EvalValue(override val str: String) : Value() {
 
     override fun evaluateToString(environment: Environment): String {
         // Replace environment variables
@@ -67,12 +73,15 @@ object ValueFactory {
     fun constructFromString(str: String): Value {
         return when {
             str.startsWith("\"") && str.endsWith("\"") -> {
-                DoubleQuotesValue(str)
+                DoubleQuotesValue(str.substring(1, str.length - 1))
             }
             str.startsWith("'") && str.endsWith("'") -> {
-                SingleQuotesValue(str)
+                SingleQuotesValue(str.substring(1, str.length - 1))
             }
             else -> {
+                if (str.contains("\"") || str.contains("'")) {
+                    throw ValueConstructionError("Value construction error: '$str' must either be surrounded with '/\" or contain no such symbols")
+                }
                 NoQuotesValue(str)
             }
         }

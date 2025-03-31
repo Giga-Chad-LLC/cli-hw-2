@@ -4,7 +4,7 @@ import java.io.File
 
 data class ProgramState(
     val environment: Environment,
-    val currentDir: File,
+    var currentDir: File,
     var isRunning: Boolean
 )
 

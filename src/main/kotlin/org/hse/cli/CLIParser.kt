@@ -16,10 +16,14 @@ class CLIParser {
         }
 
         // Check if the input is a environment variable assignment
-        val envVarRegex = Regex("^(\\w+)=(.*)$")
+        val envVarRegex = Regex("^(\\w*)=(.*)$")
         val envVarMatch = envVarRegex.find(input.trim())
         if (envVarMatch != null) {
             val (key, valueStr) = envVarMatch.destructured
+            println("Key: '$key' Value: '$valueStr'")
+            if (key.isEmpty()) throw ParsingError("Environment variable name is required")
+            if (valueStr.isEmpty()) throw ParsingError("Environment variable value is required")
+            if (valueStr[0].isWhitespace()) throw ParsingError("Environment variable value must immediately follow '=' sign")
             val value = ValueFactory.constructFromString(valueStr)
             return ModifyEnvironmentTask(key, value)
         }
@@ -43,7 +47,7 @@ class CLIParser {
      * @param commandStr The command string to parse.
      * @return The parsed Command object, or null if the command is invalid.
      */
-    private fun parseCommand(commandStr: String): Command {
+    internal fun parseCommand(commandStr: String): Command {
         if (commandStr.isBlank()) {
             throw ParsingError("Empty command in the pipeline")
         }
@@ -71,7 +75,7 @@ class CLIParser {
      * @param commandStr The command string to split.
      * @return The parts of the command string.
      */
-    private fun splitCommandString(commandStr: String): List<String> {
+    internal fun splitCommandString(commandStr: String): List<String> {
         val parts = mutableListOf<String>()
         var currentPart = StringBuilder()
         var inSingleQuotes = false
