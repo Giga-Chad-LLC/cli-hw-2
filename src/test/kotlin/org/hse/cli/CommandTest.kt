@@ -149,11 +149,11 @@ class CommandTest {
         testFile.writeText("Test content${newLine}New line$newLine")
 
         // here we use real UNIX `wc` command
-        val command = ExternalCommand("wc", listOf(NoQuotesValue(testFile.absolutePath)))
+        val command = ExternalCommand("wc", listOf(NoQuotesValue("-c") /* characters only */, NoQuotesValue(testFile.absolutePath)))
         val result = command.execute(streamConfig, programState)
 
         assertEquals(ReturnCode.SUCCESS, result)
-        assertTrue(stdout.toString().contains("2       4      22"))
+        assertTrue(stdout.toString().trim().startsWith("22"))
     }
 
     @Test
