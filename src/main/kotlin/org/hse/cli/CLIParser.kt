@@ -20,7 +20,6 @@ class CLIParser {
         val envVarMatch = envVarRegex.find(input.trim())
         if (envVarMatch != null) {
             val (key, valueStr) = envVarMatch.destructured
-            println("Key: '$key' Value: '$valueStr'")
             if (key.isEmpty()) throw ParsingError("Environment variable name is required")
             if (valueStr.isEmpty()) throw ParsingError("Environment variable value is required")
             if (valueStr[0].isWhitespace()) throw ParsingError("Environment variable value must immediately follow '=' sign")

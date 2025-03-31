@@ -17,10 +17,6 @@ class CLIInterpreter(
         true
     )
 
-    init {
-        println("Current directory: ${state.currentDir}")
-    }
-
     /**
      * Run the interpreter.
      */
