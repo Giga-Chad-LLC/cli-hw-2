@@ -18,7 +18,7 @@ class ErrorsTest {
         val commandName = "test"
         val args = emptyList<Value>()
         val expectedCount = 1
-        val error = IllegalCommandArgumentsCount(commandName, args, expectedCount)
+        val error = IllegalCommandArgumentsCountError(commandName, args, expectedCount)
         
         val expectedMessage = "Illegal arguments for command 'test': expected count 1, but got 0$newLine"
         assertEquals(expectedMessage, error.message)
@@ -29,7 +29,7 @@ class ErrorsTest {
         val commandName = "test"
         val args = listOf<Value>(NoQuotesValue("arg1"), NoQuotesValue("arg2"))
         val expectedCount = 1
-        val error = IllegalCommandArgumentsCount(commandName, args, expectedCount)
+        val error = IllegalCommandArgumentsCountError(commandName, args, expectedCount)
         
         val expectedMessage = "Illegal arguments for command 'test': expected count 1, but got 2: arg1, arg2$newLine"
         assertEquals(expectedMessage, error.message)
@@ -51,7 +51,7 @@ class ErrorsTest {
         val args = listOf<Value>(NoQuotesValue("arg1"), NoQuotesValue("arg2"))
         val expectedCount = 1
         
-        val exception = assertThrows(IllegalCommandArgumentsCount::class.java) {
+        val exception = assertThrows(IllegalCommandArgumentsCountError::class.java) {
             checkArgsCount(commandName, args, expectedCount)
         }
         
@@ -65,7 +65,7 @@ class ErrorsTest {
         val args = emptyList<Value>()
         val expectedCount = 1
         
-        val exception = assertThrows(IllegalCommandArgumentsCount::class.java) {
+        val exception = assertThrows(IllegalCommandArgumentsCountError::class.java) {
             checkArgsCount(commandName, args, expectedCount)
         }
         

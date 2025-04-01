@@ -7,7 +7,6 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.nio.file.Paths
 
 class CommandTest {
     
@@ -38,7 +37,7 @@ class CommandTest {
     
     @Test
     fun `ExitCommand throws exception with arguments`() {
-        assertThrows(IllegalCommandArgumentsCount::class.java) {
+        assertThrows(IllegalCommandArgumentsCountError::class.java) {
             ExitCommand(listOf(NoQuotesValue("arg")))
         }
     }
@@ -55,7 +54,7 @@ class CommandTest {
     
     @Test
     fun `PwdCommand throws exception with arguments`() {
-        assertThrows(IllegalCommandArgumentsCount::class.java) {
+        assertThrows(IllegalCommandArgumentsCountError::class.java) {
             PwdCommand(listOf(NoQuotesValue("arg")))
         }
     }
@@ -107,7 +106,7 @@ class CommandTest {
     
     @Test
     fun `CatCommand throws exception without arguments`() {
-        assertThrows(IllegalCommandArgumentsCount::class.java) {
+        assertThrows(IllegalCommandArgumentsCountError::class.java) {
             CatCommand(emptyList())
         }
     }
@@ -138,7 +137,7 @@ class CommandTest {
     
     @Test
     fun `WcCommand throws exception without arguments`() {
-        assertThrows(IllegalCommandArgumentsCount::class.java) {
+        assertThrows(IllegalCommandArgumentsCountError::class.java) {
             WcCommand(emptyList())
         }
     }
