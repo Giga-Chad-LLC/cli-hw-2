@@ -21,10 +21,12 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("commons-cli:commons-cli:1.4")
 }
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("file.encoding", "UTF-8")
 
     // Configure test logging for pretty printing
     testLogging {

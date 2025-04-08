@@ -7,6 +7,7 @@ const val PWD_COMMAND = "pwd"
 const val ECHO_COMMAND = "echo"
 const val CAT_COMMAND = "cat"
 const val WC_COMMAND = "wc"
+const val GREP_COMMAND = "grep"
 
 val newLine = System.lineSeparator()
 
