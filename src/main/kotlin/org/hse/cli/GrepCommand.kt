@@ -5,23 +5,25 @@ import java.io.File
 import java.nio.file.Paths
 
 /**
- * Команда grep для поиска по регулярному выражению в файле.
+ * Команда grep для поиска по регулярному выражению.
  *
  * Поддерживаемые опции:
- *  - -w : искать только целое слово; шаблон оборачивается в \b (с включением Unicode‑режима)
+ *  - -w : поиск целого слова (шаблон оборачивается в границы слова с включением Unicode‑режима)
  *  - -i : регистронезависимый поиск
- *  - -A <N> : для каждой строки с совпадением дополнительно выводить N строк ниже
+ *  - -A <N> : вывод N строк контекста после совпавшей строки
  *
- * При пересечении интервалов вывода (контекст после совпадения) они объединяются.
+ * Если указан второй параметр (filename), поиск производится в файле.
+ * Если filename не указан, grep читает входные данные из streamConfig.stdin.
  *
- * Синтаксис: grep [OPTIONS] <pattern> <filename>
+ * Синтаксис:
+ *   grep [OPTIONS] <pattern> [filename]
  */
 class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
 
     override val name = "grep"
 
     override fun execute(streamConfig: StreamConfig, state: ProgramState): ReturnCode {
-        // Преобразуем аргументы команды в список строк
+        // Преобразуем аргументы в список строк с учетом переменных окружения
         val rawArgs = args.map { it.evaluateToString(state.environment) }
 
         // Определяем опции с помощью Apache Commons CLI
@@ -39,38 +41,42 @@ class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
         val parser = DefaultParser()
         val cmd: CommandLine
         try {
-            // Разбор аргументов; остаются позиционные: pattern и filename
             cmd = parser.parse(options, rawArgs.toTypedArray())
         } catch (e: ParseException) {
             streamConfig.stderr.writeln("grep: ошибка разбора аргументов: ${e.message}")
             return ReturnCode.FAILURE
         }
 
-        // Оставшиеся аргументы должны быть ровно 2: шаблон и имя файла
+        // Количество оставшихся позиционных аргументов может быть 1 (pattern) или 2 (pattern и filename)
         val remainingArgs = cmd.args
-        if (remainingArgs.size != 2) {
+        if (remainingArgs.size !in 1..2) {
             streamConfig.stderr.writeln("grep: некорректное количество параметров")
-            streamConfig.stderr.writeln("Использование: grep [OPTIONS] <pattern> <filename>")
+            streamConfig.stderr.writeln("Использование: grep [OPTIONS] <pattern> [filename]")
             return ReturnCode.FAILURE
         }
 
         val patternArg = remainingArgs[0]
-        val filename = remainingArgs[1]
 
-        // Если задана опция -w, оборачиваем шаблон с включением Unicode‑режима,
-        // чтобы \b корректно обрабатывал кириллические буквы
+        // Если filename передан, читаем данные из файла; иначе — из потока ввода (stdin)
+        val inputText: String = if (remainingArgs.size == 2) {
+            val filename = remainingArgs[1]
+            val file = File(Paths.get(state.currentDir.absolutePath, filename).toString())
+            if (!file.exists()) {
+                streamConfig.stderr.writeln("grep: $filename: такой файл не существует")
+                return ReturnCode.FAILURE
+            }
+            file.readText()
+        } else {
+            streamConfig.stdin.bufferedReader().readText()
+        }
+
+        // Если опция -w указана, оборачиваем шаблон в границы слова, включая Unicode‑режим
         var patternToUse = patternArg
         if (cmd.hasOption("w")) {
             patternToUse = "(?U)\\b$patternArg\\b"
         }
 
-        // Флаг для игнорирования регистра
-        val regexOptions = if (cmd.hasOption("i")) {
-            setOf(RegexOption.IGNORE_CASE)
-        } else {
-            emptySet()
-        }
-
+        val regexOptions = if (cmd.hasOption("i")) setOf(RegexOption.IGNORE_CASE) else emptySet()
         val regex = try {
             Regex(patternToUse, regexOptions)
         } catch (e: Exception) {
@@ -78,7 +84,7 @@ class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
             return ReturnCode.FAILURE
         }
 
-        // Определяем количество строк для контекста (-A)
+        // Определяем количество дополнительных строк (-A)
         val afterCount: Int = if (cmd.hasOption("A")) {
             val countStr = cmd.getOptionValue("A")
             countStr.toIntOrNull()?.takeIf { it >= 0 } ?: run {
@@ -89,16 +95,9 @@ class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
             0
         }
 
-        // Определяем файл относительно текущей директории
-        val file = File(Paths.get(state.currentDir.absolutePath, filename).toString())
-        if (!file.exists()) {
-            streamConfig.stderr.writeln("grep: $filename: такой файл не существует")
-            return ReturnCode.FAILURE
-        }
+        val lines = inputText.lines()
 
-        val lines = file.readText().lines()
-
-        // Находим интервалы для вывода: для каждой строки с совпадением выводим строку + afterCount следующих строк
+        // Находим интервалы: для каждой строки с совпадением плюс afterCount следующих строк
         val intervals = mutableListOf<Pair<Int, Int>>()
         for (i in lines.indices) {
             if (regex.containsMatchIn(lines[i])) {
@@ -107,12 +106,12 @@ class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
             }
         }
 
-        // Если совпадений нет – завершаем выполнение
+        // Если совпадений нет, ничего не выводим и возвращаем успех
         if (intervals.isEmpty()) {
             return ReturnCode.SUCCESS
         }
 
-        // Объединяем пересекающиеся интервалы для исключения дублирования строк
+        // Объединяем пересекающиеся интервалы, чтобы исключить дублирование строк
         val mergedIntervals = mutableListOf<Pair<Int, Int>>()
         for (interval in intervals.sortedBy { it.first }) {
             if (mergedIntervals.isEmpty()) {
@@ -120,8 +119,7 @@ class GrepCommand(args: List<Value>) : BuiltInCommand(args) {
             } else {
                 val last = mergedIntervals.last()
                 if (interval.first <= last.second + 1) {
-                    mergedIntervals[mergedIntervals.lastIndex] =
-                        Pair(last.first, maxOf(last.second, interval.second))
+                    mergedIntervals[mergedIntervals.lastIndex] = Pair(last.first, maxOf(last.second, interval.second))
                 } else {
                     mergedIntervals.add(interval)
                 }
