@@ -66,6 +66,8 @@ class CLIParser {
             CAT_COMMAND -> CatCommand(args)
             WC_COMMAND -> WcCommand(args)
             GREP_COMMAND -> GrepCommand(args)
+            CD_COMMAND -> CdCommand(args)
+            LS_COMMAND -> LsCommand(args)
             else -> ExternalCommand(commandName, args)
         }
     }

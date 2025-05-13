@@ -8,6 +8,8 @@ const val ECHO_COMMAND = "echo"
 const val CAT_COMMAND = "cat"
 const val WC_COMMAND = "wc"
 const val GREP_COMMAND = "grep"
+const val CD_COMMAND = "cd"
+const val LS_COMMAND = "ls"
 
 val newLine = System.lineSeparator()
 
