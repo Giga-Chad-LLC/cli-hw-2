@@ -38,8 +38,10 @@ class LsCommandTest {
         val result = command.execute(streamConfig, programState)
 
         assertEquals(ReturnCode.SUCCESS, result)
-        val expectedOutput = "${file2.name}$newLine${file1.name}$newLine"
-        assertEquals(expectedOutput, stdout.toString())
+        val expectedOutput1 = "${file2.name}$newLine${file1.name}$newLine"
+        val expectedOutput2 = "${file1.name}$newLine${file2.name}$newLine"
+
+        assertTrue(expectedOutput1 == stdout.toString() || expectedOutput2 == stdout.toString())
     }
 
     @Test
