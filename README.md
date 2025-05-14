@@ -12,4 +12,5 @@
 - [Архитектура проекта](./docs/ARCHITECTURE.md)
 - [Лицензия](./LICENSE)
 ---
-- [Исходники UML диграмм](https://drive.google.com/file/d/1RxAk_gkMuU3yro490gdI4PoGJ4LMWQYF/view?usp=sharing)
+- [Исходники UML диграмм](https://drive.google.com/file/d/14g8z1RZkWinFXCYirtlUb22VHH0MM7zC/view?usp=sharing)
+- [Краткое ревью](./docs/REVIEW.md)
